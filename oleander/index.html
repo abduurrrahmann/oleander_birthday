@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Zhalla">
+<meta name="theme-color" content="#050a18">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>Zhalla's Little Universe</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#f4d58d;--teal:#5ff5d2;--pink:#ff9ec7}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#050a18;color:#eaf2ff;font-family:'Cormorant Garamond',serif;font-size:20px;overflow:hidden}
+canvas#bg{position:fixed;inset:0;z-index:0}
+#app{position:relative;z-index:1;height:100%;overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 16px 34px;text-align:center}
+h1,h2{font-family:'Cinzel Decorative',serif;color:var(--gold);margin:.3em 0;text-shadow:0 0 18px #f4d58d66}
+h1{font-size:clamp(28px,7vw,52px)}h2{font-size:clamp(20px,5vw,30px)}
+p{max-width:580px;line-height:1.45;margin:.4em 0}
+.btn{font-family:inherit;font-size:20px;color:#1a1200;background:linear-gradient(#ffe9a8,#e8b94f);border:0;border-radius:40px;padding:11px 28px;margin:10px 5px 0;cursor:pointer;box-shadow:0 0 22px #f4d58d88}
+.btn.alt{background:linear-gradient(#ffd0e4,#ff9ec7);box-shadow:0 0 22px #ff9ec788}
+.btn:active{transform:scale(.96)}
+#stage{position:relative;width:min(92vw,560px);height:min(52vh,400px);border:1px solid #5ff5d255;border-radius:20px;background:#0a1a2acc;overflow:hidden;user-select:none}
+.dots{display:flex;gap:6px;margin:6px 0}.dot{width:11px;height:11px;border-radius:50%;background:#1e2d4a}.dot.on{background:var(--pink);box-shadow:0 0 10px var(--pink)}
+.t{position:absolute;cursor:pointer;font-size:36px;transition:left 2.5s linear,top 2.5s linear;filter:drop-shadow(0 0 8px #ffeb7a)}
+.star{position:absolute;width:44px;height:44px;border-radius:50%;background:#16264a;border:2px solid var(--teal);color:var(--teal);display:flex;align-items:center;justify-content:center;cursor:pointer;transform:translate(-50%,-50%)}
+.star.ok{background:var(--gold);color:#222;box-shadow:0 0 20px var(--gold)}
+.q button.opt{display:block;width:84%;margin:8px auto;padding:10px;font:inherit;color:#eaf2ff;background:#16264a;border:1px solid var(--teal);border-radius:12px;cursor:pointer}
+.shake{animation:sh .3s}@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.bloom{position:absolute;font-size:34px;transform:scale(0);transition:transform .5s cubic-bezier(.3,1.8,.5,1)}.bloom.on{transform:scale(1);filter:drop-shadow(0 0 10px var(--pink))}
+.gift{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:110px;cursor:pointer;filter:drop-shadow(0 0 25px var(--pink));transition:.15s}
+.bun{position:absolute;font-size:56px;cursor:pointer;transition:left .3s,top .3s}
+.mg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px;height:100%;align-content:center}
+.mc{aspect-ratio:1;border-radius:12px;background:#16264a;border:1px solid var(--teal);font-size:30px;color:#fff;cursor:pointer;padding:0}
+.mc.on{background:#2a1f45;border-color:var(--pink)}.mc.ok{background:#1d3a35;border-color:var(--gold)}
+.card{background:#0b1730e6;border:1px solid var(--gold);border-radius:20px;padding:20px;max-width:600px;width:100%;box-shadow:0 0 40px #f4d58d33;animation:fade .8s;margin:auto}
+@keyframes fade{from{opacity:0;transform:translateY(12px)}}
+.letter{max-height:56vh;overflow:auto;padding:4px 10px;text-align:left;white-space:pre-line}
+.ur{direction:rtl;font-family:'Noto Nastaliq Urdu',serif;line-height:2.1}
+.big{font-size:clamp(22px,5vw,30px);color:var(--teal)}
+.menu{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.menu button{font:inherit;color:#eaf2ff;background:#16264a;border:1px solid var(--pink);border-radius:14px;padding:12px 6px;cursor:pointer}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0}
+.tile{font:inherit;color:#eaf2ff;background:#16264a;border:1px solid var(--teal);border-radius:14px;padding:10px 4px;cursor:pointer}
+.tile.dn{border-color:var(--gold);background:#2a2a1f}.tile.lk{opacity:.5;border-style:dashed}
+.env{display:block;width:100%;margin:8px 0;font:inherit;color:#eaf2ff;background:#16264a;border:1px solid var(--gold);border-radius:12px;padding:10px;cursor:pointer;text-align:left}
+.wish{font-size:24px;min-height:110px;display:flex;align-items:center;justify-content:center;color:var(--pink)}
+.sky{position:relative;height:300px;border-radius:16px;background:#0a1a2acc;border:1px solid #5ff5d255;overflow:hidden}
+.lan{position:absolute;bottom:-40px;text-align:center;transition:bottom 9s linear,opacity 9s;opacity:1;width:110px;font-size:13px}
+.lan b{display:block;font-size:34px}
+input{font:inherit;font-size:18px;padding:9px 14px;border-radius:20px;border:1px solid var(--teal);background:#0a1a2a;color:#fff;width:70%}
+.credit{position:fixed;bottom:6px;left:0;right:0;z-index:2;font-size:14px;color:#8fa3c7;text-align:center;pointer-events:none}
+.bunny{font-size:90px;cursor:pointer;display:inline-block;transition:transform .25s}
+</style></head><body>
+<canvas id="bg"></canvas>
+<div id="app"></div>
+<div class="credit">Made with 💙 by Abdurrahman</div>
+<script>
+/* =============== EDIT ME: all your words live here =============== */
+const NAME_UR = "ژالہ";               // Zhalla in Urdu (zh = ژ). Please have a native speaker confirm spelling.
+const BIRTHDAY = new Date(2026,11,17,0,0,0);
+
+/* Login (change these!). Friendly gate, not real security. */
+const USERNAME = "abdurrahman";
+const PASSWORD = "oleander18";
+const HINT = "Hint: her name's meaning + her age 🌸";
+
+/* Schedule: opens 17 Dec 2026, 12:00 AM Erbil time (UTC+3). 3 new games every 3 days. */
+const UNLOCK = Date.parse('2026-12-17T00:00:00+03:00');
+const STEP_DAYS = 3, BATCH = 3;
+
+const FRAGRANCE_WISH = "Like an oleander in bloom, you fill the air around you with a gentle fragrance. You don't have to do anything special: just by existing in this universe, you make it softer, warmer and more beautiful. May you always know how much light and fragrance you bring to every life you touch. 🌸";
+
+/* One message per game (9 games). */
+const MESSAGES = [
+ "🌐 Tumblr\nSome friendships begin in the quietest corners of the internet. Ours began on Tumblr, and I'm grateful every day that our paths crossed.",
+ "📷 Instagram\nFrom one small hello grew a real friendship. Thank you for being kind, patient and genuine with me, even through a screen.",
+ "🌸 Oleander\nYour name, Zhalla, means oleander. It is a flower that blooms bravely even in heat and hard seasons. I think that is exactly who you are: gentle on the outside, strong on the inside.",
+ "⭐ Your dreams\nYour dreams are valid, every one of them. I'm studying to become an AI scientist, and I know how long and uncertain a dream's road can feel. Keep walking. I'll be cheering for you the whole way.",
+ "🃏 Memories\nGood friendships are made of small moments: a message that made you smile, a late-night chat, a shared laugh. I keep every one of them close.",
+ "🌙 Knowing you\nI don't claim to know everything about you, and that's the beauty of it. I'm happy to keep learning who you are, one conversation at a time.",
+ "🧩 Curious mind\nYou solved the riddles because you are thoughtful and curious. Keep that curiosity; it will take you to wonderful places.",
+ "🐰 Gentleness\nYou have a soft heart, like a little rabbit in a big forest. Never let anyone make you feel that being gentle is a weakness. It is your superpower.",
+ "🎁 You made it\nNine lights, all yours. Thank you for playing and for being you. Now open your Birthday Home and read the letter I wrote with all my heart."
+];
+
+/* Quiz: first answer is correct. any:true = every answer is accepted. */
+const QUIZ = [
+ {q:"In Sorani Kurdish, what does “Zhalla” mean?",a:["Oleander 🌸","Moonlight","Rainfall"]},
+ {q:"Which animal do you think is her favourite?",a:["Rabbit 🐰","Cat","Owl"],any:true},
+ {q:"Which author does she love?",a:["Chiwan Haco","Haruki Murakami","Jane Austen"],any:true}, // check spelling
+ {q:"How old does Zhalla turn on 17 December 2026?",a:["18","16","21"]}
+];
+
+/* 3 riddles. a = accepted words, hint = shown on Hint, show = revealed after 3 misses */
+const RIDDLES = [
+ {q:"I bloom in the summer heat, in pink and white. You carry my name. What am I?",a:["oleander","zhalla","zhala","jhalla"],hint:"Think about the meaning of your own name.",show:"Oleander 🌸"},
+ {q:"I hide by day and wear a million diamonds by night. I never speak, yet I guide the lost. What am I?",a:["star","sky"],hint:"Look up after dark.",show:"The stars ⭐"},
+ {q:"I have pages but no wings, yet I can take you to a thousand worlds. What am I?",a:["book","novel","story"],hint:"You love reading me.",show:"A book 📖"}
+];
+
+const FINAL_LETTER = `Dear Zhalla,
+
+Happy 18th birthday. 🎂
+
+Becoming an adult is a big milestone, but I hope you never lose the soft, curious, kind person you already are. The world needs more people like you.
+
+I made this little universe because a friend like you deserves more than a quick text. You listen, you care, and you make ordinary days feel lighter. Thank you for that.
+
+My wish for you is simple: may your year be calm when you need rest, brave when you need courage, and full of small joys, a good book, a quiet night, a soft bunny, a laugh that surprises you.
+
+Whatever you choose to become, be proud of it. And on your hard days, remember that someone far away, in Mumbai, is quietly rooting for you.
+
+Always your friend,
+Abdurrahman`;
+
+const URDU = "ژالہ، سالگرہ مبارک ہو! اللہ کرے تم ہمیشہ خوش رہو اور تمہارے سارے خواب پورے ہوں۔";
+const SORANI = "ڕۆژی لەدایکبوونت پیرۆز بێت، ژاڵە 💙";
+
+const WISHES = [
+ "May your heart always feel at home.","May you read stories that move you.","May you always be treated with kindness.",
+ "May you find calm on busy days.","May your dreams grow like oleander in the sun.","May you laugh until your cheeks hurt.",
+ "May you never doubt your worth.","May people listen when you speak.","May your nights be peaceful and starry.",
+ "May your year be full of gentle surprises.","May you meet people who feel like home.","May you be proud of how far you've come.",
+ "May you always have time for what you love.","May rest never feel like guilt.","May you have the courage to try new things.",
+ "May every little rabbit hop bring you joy.","May your future surprise you in the best way.","May you always know you are loved."
+];
+const OPEN_WHEN = [
+ ["Open when you're sad 🌧","It's okay to feel this way. Be gentle with yourself the way you would be with a friend. This feeling is not forever. You are not alone."],
+ ["Open when you doubt yourself 🌱","You have already survived every hard day you've had. That's proof of your strength. You're doing better than you think."],
+ ["Open when you can't sleep 🌙","Breathe slowly. The stars are still up there, and so is someone sending you good thoughts. Rest, you've done enough today."],
+ ["Open when you feel happy ☀️","Hold on to this moment and enjoy it fully. You deserve every bit of it. I'm smiling with you."]
+];
+const BUNNY_LINES = ["Boing! 🐰 You are loved.","Hop hop! Drink some water 💧","This bunny says: you're doing great.","Soft thoughts only ✨","Carrot break? 🥕 You deserve it."];
+/* ================================================================== */
+
+const $=s=>document.querySelector(s),app=$('#app'),rnd=(a,b)=>a+Math.random()*(b-a);
+const LS={g:k=>{try{return localStorage[k]}catch(_){return null}},s:(k,v)=>{try{localStorage[k]=v}catch(_){}}};
+const PREVIEW=location.search.includes('preview=1');
+let done;try{done=JSON.parse(LS.g('zd')||'null')}catch(_){}
+if(!Array.isArray(done)||done.length!=9)done=Array(9).fill(false);
+const save=()=>LS.s('zd',JSON.stringify(done));
+let authed=LS.g('zauth')=='1';
+let T=[];const iv=(f,m)=>{const id=setInterval(f,m);T.push(id);return id};const clr=()=>{T.forEach(clearInterval);T=[]};
+
+/* tap sounds, sparkles, petal trail */
+let AC;const chime=(f=660)=>{try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime;o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.1,t);g.gain.exponentialRampToValueAtTime(.001,t+.6);o.connect(g);g.connect(AC.destination);o.start();o.stop(t+.6)}catch(_){}};
+const NOTES=[523,587,659,784,880];let ni=0,lastTrail=0;
+const fx=(x,y,n,spread,list)=>{for(let i=0;i<n;i++){const d=document.createElement('div'),a=i/n*6.28,r=rnd(spread/2,spread);d.textContent=list[i%list.length];d.style.cssText=`position:fixed;z-index:9;left:${x}px;top:${y}px;font-size:15px;pointer-events:none;transition:all .8s ease-out`;document.body.appendChild(d);requestAnimationFrame(()=>{d.style.transform=`translate(${Math.cos(a)*r}px,${Math.sin(a)*r}px) rotate(${rnd(-90,90)}deg)`;d.style.opacity=0});setTimeout(()=>d.remove(),850)}};
+addEventListener('pointerdown',e=>{chime(NOTES[ni++%5]);try{navigator.vibrate&&navigator.vibrate(12)}catch(_){}fx(e.clientX,e.clientY,8,60,['✨','🌸','💫'])});
+addEventListener('pointermove',e=>{if(e.buttons||e.pointerType=='touch'){const n=Date.now();if(n-lastTrail>90){lastTrail=n;fx(e.clientX,e.clientY,1,25,['🌸'])}}});
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+
+/* background */
+const cv=$('#bg'),cx=cv.getContext('2d');let S=[],P=[];
+function rs(){cv.width=innerWidth;cv.height=innerHeight;S=[...Array(110)].map(()=>({x:rnd(0,cv.width),y:rnd(0,cv.height),r:rnd(.3,1.6),p:rnd(0,6)}));P=[...Array(22)].map(()=>({x:rnd(0,cv.width),y:rnd(0,cv.height),s:rnd(4,9),v:rnd(.2,.7),a:rnd(0,6)}))}
+addEventListener('resize',rs);rs();
+(function f(t){const g=cx.createLinearGradient(0,0,0,cv.height);g.addColorStop(0,'#050a18');g.addColorStop(1,'#0b2c33');cx.globalAlpha=1;cx.fillStyle=g;cx.fillRect(0,0,cv.width,cv.height);
+S.forEach(s=>{cx.globalAlpha=.4+.6*Math.abs(Math.sin(t/1000+s.p));cx.fillStyle='#fff';cx.beginPath();cx.arc(s.x,s.y,s.r,0,7);cx.fill()});
+P.forEach(p=>{p.y+=p.v;p.x+=Math.sin(t/900+p.a)*.5;if(p.y>cv.height+10){p.y=-10;p.x=rnd(0,cv.width)}cx.globalAlpha=.55;cx.fillStyle='#ff9ec7';cx.beginPath();cx.ellipse(p.x,p.y,p.s,p.s/2,p.a+t/1500,0,7);cx.fill()});
+requestAnimationFrame(f)})(0);
+
+const dots=()=>'<div class="dots">'+done.map(d=>`<div class="dot ${d?'on':''}"></div>`).join('')+'</div>';
+const gT=i=>UNLOCK+Math.floor(i/BATCH)*STEP_DAYS*864e5;          // unlock time of game i
+const gOpen=i=>PREVIEW||Date.now()>=gT(i);
+const fmtD=t=>new Date(t).toLocaleDateString([],{day:'numeric',month:'short'});
+
+/* ---------- login → time lock → walkthrough → hub ---------- */
+function login(){
+ app.innerHTML=`<div style="font-size:64px">🔐</div><h1>Welcome</h1><p class="big ur">${NAME_UR}</p><p>Enter the username and password I gave you.</p>
+ <p><input id="lu" placeholder="Username" autocapitalize="none" autocomplete="off" style="width:min(78vw,300px)"></p>
+ <p><input id="lp" type="password" placeholder="Password" style="width:min(78vw,300px)"></p>
+ <p id="lm" style="font-size:16px;color:#9fb3d7;min-height:22px"></p>
+ <button class="btn" id="lg">Unlock ✨</button><p style="font-size:15px;color:#9fb3d7">${HINT}</p>`;
+ const go=()=>{if($('#lu').value.trim().toLowerCase()==USERNAME.toLowerCase()&&$('#lp').value===PASSWORD){LS.s('zauth','1');authed=true;intro()}
+  else{$('#lm').textContent='Hmm, that is not right. Try again 💙';$('#lg').classList.add('shake');setTimeout(()=>$('#lg').classList.remove('shake'),400)}};
+ $('#lg').onclick=go;$('#lp').onkeydown=e=>{if(e.key=='Enter')go()};
+}
+function lock(){
+ const mine=new Date(UNLOCK).toLocaleString([],{weekday:'long',day:'numeric',month:'long',hour:'numeric',minute:'2-digit'});
+ app.innerHTML=`<div style="font-size:64px">🌙</div><h1>Not yet...</h1><p class="big ur">${NAME_UR}</p>
+ <p>Something special is waiting for you.<br>It opens at midnight, 17 December, Erbil time.</p>
+ <div id="cd" style="display:flex;gap:10px;margin:14px 0"></div>
+ <p style="font-size:16px;color:#9fb3d7">On your device's clock: ${mine}</p>`;
+ const tick=()=>{let d=UNLOCK-Date.now();if(d<=0)return intro();
+  $('#cd').innerHTML=[['days',864e5],['hours',36e5],['mins',6e4],['secs',1e3]].map(([n,m])=>{const x=Math.floor(d/m);d-=x*m;return `<div class="card" style="padding:10px 14px;min-width:68px"><div class="big">${String(x).padStart(2,'0')}</div><div style="font-size:14px">${n}</div></div>`}).join('')};
+ tick();clr();iv(tick,1000);
+}
+function intro(){
+ clr();
+ if(!authed)return login();
+ if(!PREVIEW&&Date.now()<UNLOCK)return lock();
+ if(!LS.g('zseen'))return guide();
+ if(location.search.includes('hub=1'))return hub();
+ next();
+}
+
+/* sequential flow: no menu. Next unfinished game, or a waiting screen, or the finale */
+function next(){
+ clr();
+ const i=done.findIndex(d=>!d);
+ if(i<0){if(!LS.g('zfin')){LS.s('zfin','1');confetti()}return home()}
+ return gOpen(i)?play(i):rest(i);
+}
+function rest(i){
+ clr();
+ const when=new Date(gT(i)).toLocaleDateString([],{weekday:'long',day:'numeric',month:'long'});
+ app.innerHTML=`<div class="card"><div style="font-size:56px">🌙</div><h2>${done.filter(Boolean).length} of 9 lights collected</h2><p class="big ur">${NAME_UR}</p>${dots()}
+ <p>Your next games open on <b>${when}</b>.</p><div id="cd" style="display:flex;gap:8px;justify-content:center;margin:10px 0"></div>
+ <p style="font-size:16px;color:#9fb3d7">Come back then. Something new is waiting. 💙</p>${done[2]?'<button class="btn alt" id="bh">💌 Birthday Home</button>':''}</div>`;
+ if(done[2])$('#bh').onclick=home;
+ const tick=()=>{let d=gT(i)-Date.now();if(d<=0)return next();
+  $('#cd').innerHTML=[['days',864e5],['hrs',36e5],['min',6e4],['sec',1e3]].map(([n,m])=>{const x=Math.floor(d/m);d-=x*m;return `<div style="border:1px solid #5ff5d255;border-radius:12px;padding:8px 10px;min-width:58px"><div class="big">${String(x).padStart(2,'0')}</div><div style="font-size:13px">${n}</div></div>`}).join('')};
+ tick();iv(tick,1000);
+}
+function guide(){
+ const f=d=>new Date(UNLOCK+d*864e5).toLocaleDateString([],{day:'numeric',month:'long'});
+ const L=[
+  `<div style="font-size:56px">🌸</div><h2>Welcome, Zhalla</h2><p class="big ur">${NAME_UR}</p><p>This is a small game world made just for you. Here is a quick tour.</p>`,
+  `<div style="font-size:56px">🎮</div><h2>9 little games</h2><p>Each game gives you one light ✨ and one message from me. Collect all 9 lights.</p>`,
+  `<div style="font-size:56px">🗓</div><h2>New games every 3 days</h2><p>Games 1–3: ${f(0)}<br>Games 4–6: ${f(STEP_DAYS)}<br>Games 7–9: ${f(STEP_DAYS*2)}</p><p>Locked games show a 🔒 and the day they open.</p>`,
+  `<div style="font-size:56px">👆</div><h2>How to play</h2><p>Tap, watch and think. No timers and no losing. There are stars, oleander flowers, a bunny, and 3 riddles with hints 💡. You can replay any game.</p>`,
+  `<div style="font-size:56px">💌</div><h2>Birthday Home</h2><p>Your letter, 18 wishes, open-when notes, a wish lantern and a bunny corner are always open. Come back whenever you like.</p>`
+ ];let i=0;
+ const draw=()=>{app.innerHTML=`<div class="card">${L[i]}<div class="dots" style="justify-content:center">${L.map((_,k)=>`<div class="dot ${k<=i?'on':''}"></div>`).join('')}</div>
+  ${i?'<button class="btn alt" id="gb">Back</button>':''}<button class="btn" id="gn">${i==L.length-1?'Start playing ✨':'Next'}</button></div>`;
+  $('#gn').onclick=()=>{if(i==L.length-1){LS.s('zseen','1');next()}else{i++;draw()}};if(i)$('#gb').onclick=()=>{i--;draw()}};
+ draw();
+}
+
+/* ---------- hub (the start screen) ---------- */
+function hub(){
+ clr();
+ const tiles=GAMES.map((g,i)=>{const o=gOpen(i),d=done[i];
+  return `<button class="tile ${d?'dn':o?'':'lk'}" data-i="${i}"><div style="font-size:30px">${o?g.e:'🔒'}</div><div style="font-size:14px">${g.n}</div><div style="font-size:12px;color:#9fb3d7">${d?'✅ Done':o?'Play':'Opens '+fmtD(gT(i))}</div></button>`}).join('');
+ let nx=null;for(let i=0;i<9;i++)if(!gOpen(i)){nx=gT(i);break}
+ app.innerHTML=`<div class="card"><h2>Zhalla's Little Universe</h2><p class="big ur">${NAME_UR}</p>
+ <p>✨ ${done.filter(Boolean).length} / 9 lights</p><div class="grid3">${tiles}</div>
+ <p id="hm" style="font-size:16px;color:#9fb3d7;min-height:22px">${nx?'Next games open in <b id="nx"></b>':'All games are open! 🌟'}</p>
+ <button class="btn alt" id="bh">💌 Birthday Home</button><button class="btn" id="bg">❓ How to play</button></div>`;
+ app.querySelectorAll('.tile').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(gOpen(i))play(i);else{b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),300);$('#hm').textContent=`🔒 This game opens on ${new Date(gT(i)).toLocaleDateString([],{weekday:'long',day:'numeric',month:'long'})}`}});
+ $('#bh').onclick=home;$('#bg').onclick=()=>{LS.s('zseen','');guide()};
+ if(nx)iv(()=>{let d=nx-Date.now();if(d<=0)return hub();const x=Math.floor(d/864e5),h=Math.floor(d%864e5/36e5),m=Math.floor(d%36e5/6e4),s=Math.floor(d%6e4/1e3);$('#nx').textContent=`${x}d ${h}h ${m}m ${s}s`},1000);
+}
+
+/* ---------- play / win ---------- */
+function play(i){
+ clr();const g=GAMES[i];
+ app.innerHTML=`<h2>${g.n}</h2><p>${g.t}</p>${dots()}<div id="stage"></div><p style="font-size:16px;color:#9fb3d7;margin-bottom:0">${g.h}</p>`;
+ g.run($('#stage'),()=>win(i));
+}
+function win(i){
+ clr();done[i]=true;save();
+ const all=done.every(Boolean),fin=all;
+ app.innerHTML=`<div class="card"><h2>Light ${i+1} of 9 ✨</h2><p class="letter" style="max-height:none">${MESSAGES[i]}</p><button class="btn" id="nx">${fin?'Open the birthday gift 🎁':'Continue ✨'}</button></div>`;
+ [523,659,784,1047].forEach((f,k)=>setTimeout(()=>chime(f),k*160));
+ $('#nx').onclick=next;
+}
+
+/* ---------- the 9 games ---------- */
+const GAMES=[
+ {n:'Fireflies',e:'✨',t:'Catch the fireflies ✨',h:'Tap all 6 fireflies.',run:(st,fin)=>{let n=6;for(let i=0;i<6;i++){const e=document.createElement('div');e.className='t';e.textContent='✨';st.appendChild(e);
+  const mv=()=>{e.style.left=rnd(5,88)+'%';e.style.top=rnd(5,85)+'%'};mv();iv(mv,2500);e.onclick=()=>{e.remove();if(!--n)fin()}}}},
+ {n:'Constellation',e:'🌌',t:'Connect the stars to bloom an oleander 🌌🌸',h:'Tap the stars in order, 1 → 5, around the circle.',run:(st,fin)=>{
+  const W=st.clientWidth,H=st.clientHeight,cx=W/2,cy=H/2,R=Math.min(W,H)*.34,NS='http://www.w3.org/2000/svg';
+  const sv=document.createElementNS(NS,'svg');sv.setAttribute('width','100%');sv.setAttribute('height','100%');sv.style.position='absolute';st.appendChild(sv);
+  const el=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);sv.appendChild(e);return e};
+  const pts=[...Array(5)].map((_,k)=>{const a=(-90+72*k)*Math.PI/180;return{x:cx+Math.cos(a)*R,y:cy+Math.sin(a)*R,d:-90+72*k}});
+  const line=(a,b)=>el('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,stroke:'#f4d58d','stroke-width':2});
+  const bloom=()=>{pts.forEach(p=>{const e=el('ellipse',{cx:cx+(p.x-cx)*.55,cy:cy+(p.y-cy)*.55,rx:R*.52,ry:R*.3,transform:`rotate(${p.d} ${cx+(p.x-cx)*.55} ${cy+(p.y-cy)*.55})`,fill:'#ff9ec7',opacity:0});e.style.transition='opacity 1.2s';e.style.filter='drop-shadow(0 0 10px #ff9ec7)';requestAnimationFrame(()=>requestAnimationFrame(()=>e.setAttribute('opacity',.8)))});
+   const c=el('circle',{cx,cy,r:R*.17,fill:'#f4d58d',opacity:0});c.style.transition='opacity 1.2s';requestAnimationFrame(()=>requestAnimationFrame(()=>c.setAttribute('opacity',1)));
+   setTimeout(()=>{const o=document.createElement('div');o.style.cssText='position:absolute;inset:0;background:#0b1730ee;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px;animation:fade 1s';
+    o.innerHTML=`<div style="font-size:44px">🌸</div><p style="font-size:19px;line-height:1.45">${FRAGRANCE_WISH}</p><button class="btn" id="fw">Continue ✨</button>`;st.appendChild(o);o.querySelector('#fw').onclick=fin},2600)};
+  let nx=0;pts.forEach((p,i)=>{const d=document.createElement('div');d.className='star';d.style.left=p.x+'px';d.style.top=p.y+'px';d.style.zIndex=2;d.textContent=i+1;st.appendChild(d);
+   d.onclick=()=>{if(i!=nx){d.classList.add('shake');return}d.classList.add('ok');if(i)line(pts[i-1],p);
+    if(++nx==5){setTimeout(()=>{line(p,pts[0]);setTimeout(bloom,500)},300)}}})}},
+ {n:'Oleander',e:'🌸',t:'Grow the oleander 🌸',h:'Tap raindrops 💧 to make 8 flowers bloom.',run:(st,fin)=>{st.insertAdjacentHTML('beforeend','<div style="position:absolute;bottom:0;left:0;right:0;text-align:center;font-size:120px;line-height:1">🌿</div>');
+  const B=[...Array(8)].map(()=>{const b=document.createElement('div');b.className='bloom';b.textContent='🌸';b.style.left=rnd(14,76)+'%';b.style.bottom=rnd(8,34)+'%';st.appendChild(b);return b});
+  let n=0;const h=iv(()=>{const e=document.createElement('div');e.className='t';e.textContent='💧';e.style.transition='top 3s linear';e.style.left=rnd(5,88)+'%';e.style.top='-10%';st.appendChild(e);
+   requestAnimationFrame(()=>requestAnimationFrame(()=>e.style.top='70%'));setTimeout(()=>e.remove(),3200);
+   e.onclick=()=>{e.remove();B[n++].classList.add('on');if(n==8){clearInterval(h);setTimeout(fin,900)}}},650)}},
+ {n:'Star Rain',e:'⭐',t:'Stars are falling ⭐',h:'Tap 8 stars before they vanish.',run:(st,fin)=>{let n=0;st.insertAdjacentHTML('beforeend','<div style="position:absolute;bottom:8px;right:12px;font-size:16px">catch 8 ⭐</div>');
+  const h=iv(()=>{const e=document.createElement('div');e.className='t';e.textContent='⭐';e.style.transition='top 3s linear';e.style.left=rnd(5,88)+'%';e.style.top='-10%';st.appendChild(e);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>e.style.top='100%'));setTimeout(()=>e.remove(),3200);
+  e.onclick=()=>{e.remove();if(++n==8){clearInterval(h);fin()}}},700)}},
+ {n:'Memory',e:'🃏',t:'Match the pairs 🃏',h:'Flip cards and find all 6 pairs.',run:(st,fin)=>{const sy=['🌸','⭐','🐰','🌙','📖','🌿'],c=[...sy,...sy].sort(()=>Math.random()-.5);
+  st.innerHTML='<div class="mg"></div>';let open=[],lk=false,pairs=0;
+  c.forEach(s=>{const b=document.createElement('button');b.className='mc';b.dataset.s=s;b.textContent='?';st.firstChild.appendChild(b);
+   b.onclick=()=>{if(lk||b.classList.contains('on')||b.classList.contains('ok'))return;b.classList.add('on');b.textContent=s;open.push(b);
+    if(open.length==2){const[x,y]=open;open=[];if(x.dataset.s==y.dataset.s){x.className=y.className='mc ok';if(++pairs==6)setTimeout(fin,600)}
+     else{lk=true;setTimeout(()=>{[x,y].forEach(z=>{z.className='mc';z.textContent='?'});lk=false},700)}}}})}},
+ {n:'About You',e:'🌙',t:'How well do I know you? 🌙',h:'Answer 4 questions.',run:(st,fin)=>{let k=0;const show=()=>{const q=QUIZ[k];st.innerHTML=`<div class="q" style="padding-top:22px"><p class="big">${q.q}</p></div>`;
+  q.a.map((t,i)=>({t,ok:q.any||i==0})).sort(()=>Math.random()-.5).forEach(o=>{const b=document.createElement('button');b.className='opt';b.textContent=o.t;
+   b.onclick=()=>{if(o.ok){if(++k==QUIZ.length)fin();else show()}else{b.classList.add('shake');b.style.opacity=.35}};st.firstChild.appendChild(b)})};show()}},
+ {n:'Riddles',e:'🧩',t:'Riddle night: 3 riddles 🧩',h:'Type your answer. Use 💡 for a hint.',run:(st,fin)=>{let k=0,f=0;const show=()=>{const r=RIDDLES[k];f=0;
+  st.innerHTML=`<div style="padding:14px"><p style="font-size:15px;color:#9fb3d7">Riddle ${k+1} of ${RIDDLES.length}</p><p class="big" style="font-size:21px">${r.q}</p><p><input id="ra" placeholder="Your answer" autocomplete="off" style="width:80%"></p><p id="rm" style="min-height:24px;font-size:16px;color:#ff9ec7"></p><button class="btn" id="rc" style="margin-top:0">Check</button><button class="btn alt" id="rh" style="margin-top:0">Hint 💡</button></div>`;
+  const next=()=>{if(++k==RIDDLES.length)fin();else show()};$('#rh').onclick=()=>$('#rm').textContent=r.hint;
+  const chk=()=>{const v=$('#ra').value.toLowerCase().trim();if(!v)return;
+   if(r.a.some(x=>v.includes(x))){$('#rm').textContent='Yes! 🌟';setTimeout(next,700)}
+   else{f++;$('#ra').classList.add('shake');setTimeout(()=>$('#ra').classList.remove('shake'),300);
+    if(f>=3){$('#rm').textContent='The answer: '+r.show+'. Tap Check to continue.';$('#rc').onclick=next}else $('#rm').textContent='Not quite, try again 💙'}};
+  $('#rc').onclick=chk;$('#ra').onkeydown=e=>{if(e.key=='Enter')$('#rc').onclick()}};show()}},
+ {n:'Bunny',e:'🐰',t:'Catch the bunny 🐰',h:'Tap the bunny 7 times.',run:(st,fin)=>{let n=0;const b=document.createElement('div');b.className='bun';b.textContent='🐰';st.appendChild(b);
+  const c=document.createElement('div');c.style.cssText='position:absolute;bottom:8px;right:12px;font-size:16px';c.textContent='0 / 7';st.appendChild(c);
+  const mv=()=>{b.style.left=rnd(5,80)+'%';b.style.top=rnd(5,75)+'%'};mv();iv(mv,1100);
+  b.onclick=()=>{c.textContent=++n+' / 7';if(n==7)fin();else mv()}}},
+ {n:'The Gift',e:'🎁',t:'Open your gift 🎁',h:'Tap the gift 3 times.',run:(st,fin)=>{let n=0;const g=document.createElement('div');g.className='gift';g.textContent='🎁';st.appendChild(g);
+  g.onclick=()=>{n++;g.style.transform=`translate(-50%,-50%) scale(${1+n*.18}) rotate(${n%2?8:-8}deg)`;if(n==3)setTimeout(fin,400)}}}
+];
+
+/* ---------- Birthday Home ---------- */
+function home(){
+ clr();
+ const days=Math.ceil((BIRTHDAY-new Date())/864e5);
+ const cd=days>0?`${days} day${days>1?'s':''} until 17 December 🎂`:days==0?'Today is your day! 🎉':'Happy Birthday, always 💙';
+ app.innerHTML=`<div class="card"><div style="font-size:50px">🌸</div><h2>Happy 18th Birthday, Zhalla!</h2>
+ <p class="big">${SORANI}</p><p class="big ur">${URDU}</p><p>${cd}</p>
+ <div class="menu">
+ <button data-s="letter">💌 My letter</button><button data-s="wish">✨ 18 wishes</button>
+ <button data-s="open">📮 Open when…</button><button data-s="lan">🏮 Wish lantern</button>
+ <button data-s="bunny">🐰 Bunny corner</button><button data-s="games">▶ Continue</button></div></div>`;
+ app.querySelectorAll('.menu button').forEach(b=>b.onclick=()=>sec(b.dataset.s));
+}
+function view(h){app.innerHTML=`<div class="card">${h}<button class="btn" id="bk">← Back</button></div>`;$('#bk').onclick=home}
+function sec(s){
+ if(s=='games')return next();
+ if(s=='letter'){view(`<h2>For Zhalla 💌</h2><div class="letter">${FINAL_LETTER}</div><p class="ur">${URDU}</p>`)}
+ if(s=='wish'){let i=0;view(`<h2>18 wishes for 18</h2><div class="wish" id="w"></div><p id="c" style="color:#9fb3d7"></p><button class="btn alt" id="nw">Next wish ✨</button>`);
+  const show=()=>{$('#w').textContent=WISHES[i];$('#c').textContent=`${i+1} / ${WISHES.length}`;i=(i+1)%WISHES.length};show();$('#nw').onclick=show}
+ if(s=='open'){view(`<h2>Open when…</h2><div id="ev"></div>`);
+  OPEN_WHEN.forEach(([t,m])=>{const b=document.createElement('button');b.className='env';b.textContent=t;b.onclick=()=>{b.textContent=m;b.style.borderColor='#ff9ec7'};$('#ev').appendChild(b)})}
+ if(s=='lan'){view(`<h2>Make a wish 🏮</h2><div class="sky" id="sky"></div><p><input id="wt" placeholder="Type a wish (optional)" maxlength="40"></p><button class="btn alt" id="rl">Release lantern</button>`);
+  $('#rl').onclick=()=>{const d=document.createElement('div');d.className='lan';d.style.left=rnd(5,70)+'%';d.innerHTML=`<b>🏮</b>${$('#wt').value.replace(/</g,'&lt;')}`;$('#sky').appendChild(d);
+   requestAnimationFrame(()=>requestAnimationFrame(()=>{d.style.bottom='110%';d.style.opacity='0'}));setTimeout(()=>d.remove(),9500);$('#wt').value=''}}
+ if(s=='bunny'){let n=0;view(`<h2>Bunny corner 🐰</h2><div class="bunny" id="bn">🐰</div><p id="bt">Tap the bunny!</p>`);
+  $('#bn').onclick=()=>{const b=$('#bn');b.style.transform='translateY(-40px) rotate(-8deg)';setTimeout(()=>b.style.transform='',250);$('#bt').textContent=BUNNY_LINES[n++%BUNNY_LINES.length]}}
+}
+function confetti(){const cols=['#ff9ec7','#5ff5d2','#f4d58d','#ffffff'];
+ for(let i=0;i<90;i++){const e=document.createElement('div');e.style.cssText=`position:fixed;z-index:5;top:-10px;left:${rnd(0,100)}vw;width:9px;height:9px;background:${cols[i%4]};border-radius:50%;pointer-events:none;transition:all ${rnd(2,4)}s ease-in`;
+  document.body.appendChild(e);requestAnimationFrame(()=>{e.style.top='105vh';e.style.transform=`translateX(${rnd(-80,80)}px)`});setTimeout(()=>e.remove(),4500)}}
+intro();
+</script></body></html>
